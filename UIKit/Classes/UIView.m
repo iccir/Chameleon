@@ -818,6 +818,18 @@ static IMP defaultImplementationOfDisplayLayer;
     }
 }
 
+- (CGFloat)contentScaleFactor
+{
+    return _layer.contentsScale;
+}
+
+- (void)setContentScaleFactor:(CGFloat)contentScaleFactor
+{
+    if (contentScaleFactor != _layer.contentsScale) {
+        _layer.contentsScale = contentScaleFactor;
+    }
+}
+
 - (CGFloat)alpha
 {
     return _layer.opacity;
