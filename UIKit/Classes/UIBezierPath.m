@@ -37,7 +37,9 @@
 @synthesize miterLimit = _miterLimit;
 @synthesize flatness = _flatness;
 @synthesize usesEvenOddFillRule = _usesEvenOddFillRule;
-@synthesize CGPath = _path;
+@dynamic CGPath;
+
+#define INVALIDATE_IMMUTABLE() if (_immutablePath) { CGPathRelease(_immutablePath); _immutablePath = NULL; }
 
 - (id)init
 {
@@ -53,7 +55,9 @@
 
 - (void)dealloc
 {
+    free(_lineDashPattern);
     if (_path) CGPathRelease(_path);
+    if (_immutablePath) CGPathRelease(_immutablePath);
     [super dealloc];
 }
 
@@ -61,10 +65,10 @@
 {
     UIBezierPath *result = NSCopyObject(self, 0, zone);
     if (_path) {
-        result->_path = CGPathCreateCopy(_path);
+        result->_path = CGPathCreateMutableCopy(_path);
     }
     
-    _lineDashPattern = NULL;
+    result->_lineDashPattern = NULL;
     [result setLineDash:_lineDashPattern count:_lineDashCount phase:_lineDashPhase];
     
     return result;
@@ -74,7 +78,7 @@
 {
     NSAssert(CGPath != NULL, @"CGPath must not be NULL");
     UIBezierPath *bezierPath = [[self alloc] init];
-    bezierPath->_path = CGPath;
+    bezierPath->_path = CGPathCreateMutableCopy(CGPath);
     return [bezierPath autorelease];
 }
 
@@ -172,66 +176,52 @@
 
 - (void)moveToPoint:(CGPoint)point
 {
-    CGMutablePathRef mutablePath = CGPathCreateMutableCopy(_path);
-    CGPathMoveToPoint(mutablePath, NULL, point.x, point.y);
-    self.CGPath = mutablePath;
-    CGPathRelease(mutablePath);
+    CGPathMoveToPoint(_path, NULL, point.x, point.y);
+    INVALIDATE_IMMUTABLE();
 }
 
 - (void)addLineToPoint:(CGPoint)point
 {
-    CGMutablePathRef mutablePath = CGPathCreateMutableCopy(_path);
-    CGPathAddLineToPoint(mutablePath, NULL, point.x, point.y);
-    self.CGPath = mutablePath;
-    CGPathRelease(mutablePath);
+    CGPathAddLineToPoint(_path, NULL, point.x, point.y);
+    INVALIDATE_IMMUTABLE();
 }
 
 - (void)addArcWithCenter:(CGPoint)center radius:(CGFloat)radius startAngle:(CGFloat)startAngle endAngle:(CGFloat)endAngle clockwise:(BOOL)clockwise
 {
-    CGMutablePathRef mutablePath = CGPathCreateMutableCopy(_path);
-    CGPathAddArc(mutablePath, NULL, center.x, center.y, radius, startAngle, endAngle, clockwise);
-    self.CGPath = mutablePath;
-    CGPathRelease(mutablePath);
+    CGPathAddArc(_path, NULL, center.x, center.y, radius, startAngle, endAngle, clockwise);
+    INVALIDATE_IMMUTABLE();
 }
 
 - (void)addCurveToPoint:(CGPoint)endPoint controlPoint1:(CGPoint)controlPoint1 controlPoint2:(CGPoint)controlPoint2
 {
-    CGMutablePathRef mutablePath = CGPathCreateMutableCopy(_path);
-    CGPathAddCurveToPoint(mutablePath, NULL, controlPoint1.x, controlPoint1.y, controlPoint2.x, controlPoint2.y, endPoint.x, endPoint.y);
-    self.CGPath = mutablePath;
-    CGPathRelease(mutablePath);
+    CGPathAddCurveToPoint(_path, NULL, controlPoint1.x, controlPoint1.y, controlPoint2.x, controlPoint2.y, endPoint.x, endPoint.y);
+    INVALIDATE_IMMUTABLE();
 }
 
 - (void)addQuadCurveToPoint:(CGPoint)endPoint controlPoint:(CGPoint)controlPoint
 {
-    CGMutablePathRef mutablePath = CGPathCreateMutableCopy(_path);
-    CGPathAddQuadCurveToPoint(mutablePath, NULL, controlPoint.x, controlPoint.y, endPoint.x, endPoint.y);
-    self.CGPath = mutablePath;
-    CGPathRelease(mutablePath);
+    CGPathAddQuadCurveToPoint(_path, NULL, controlPoint.x, controlPoint.y, endPoint.x, endPoint.y);
+    INVALIDATE_IMMUTABLE();
 }
 
 - (void)closePath
 {
-    CGMutablePathRef mutablePath = CGPathCreateMutableCopy(_path);
-    CGPathCloseSubpath(mutablePath);
-    self.CGPath = mutablePath;
-    CGPathRelease(mutablePath);
+    CGPathCloseSubpath(_path);
+    INVALIDATE_IMMUTABLE();
 }
 
 - (void)removeAllPoints
 {
-    CGMutablePathRef mutablePath = CGPathCreateMutable();
-    self.CGPath = mutablePath;
-    CGPathRelease(mutablePath);
+    CGPathRelease(_path);
+    _path = CGPathCreateMutable();
+    INVALIDATE_IMMUTABLE();
 }
 
 - (void)appendPath:(UIBezierPath *)bezierPath
 {
     if (bezierPath) {
-        CGMutablePathRef mutablePath = CGPathCreateMutableCopy(_path);
-        CGPathAddPath(mutablePath, NULL, bezierPath.CGPath);
-        self.CGPath = mutablePath;
-        CGPathRelease(mutablePath);
+        CGPathAddPath(_path, NULL, bezierPath->_path);
+        INVALIDATE_IMMUTABLE();
     }
 }
 
@@ -240,8 +230,18 @@
     NSAssert(path != NULL, @"path must not be NULL");
     if (path != _path) {
         if (_path) CGPathRelease(_path);
-        _path = CGPathCreateCopy(path);
+        _path = CGPathCreateMutableCopy(path);
+        INVALIDATE_IMMUTABLE();
     }
+}
+
+- (CGPathRef)CGPath
+{
+    if (!_immutablePath) {
+        _immutablePath = CGPathCreateCopy(_path);
+    }
+    
+    return _immutablePath;
 }
 
 - (CGPoint)currentPoint
@@ -378,7 +378,7 @@
     CGPathAddPath(mutablePath, &transform, _path);
     self.CGPath = mutablePath;
     CGPathRelease(mutablePath);
+    INVALIDATE_IMMUTABLE();
 }
-
 
 @end

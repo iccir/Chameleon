@@ -40,7 +40,7 @@ typedef NSUInteger UIRectCorner;
 
 @interface UIBezierPath : NSObject <NSCopying> {
 @private
-    CGPathRef _path;
+    CGMutablePathRef _path;
     CGFloat _lineWidth;
     CGLineCap _lineCapStyle;
     CGLineJoin _lineJoinStyle;
@@ -50,6 +50,7 @@ typedef NSUInteger UIRectCorner;
     CGFloat *_lineDashPattern;
     NSInteger _lineDashCount;
     CGFloat _lineDashPhase;
+    CGPathRef _immutablePath;
 }
 
 + (UIBezierPath *)bezierPath;
