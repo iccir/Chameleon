@@ -64,6 +64,7 @@
         result->_path = CGPathCreateCopy(_path);
     }
     
+    _lineDashPattern = NULL;
     [result setLineDash:_lineDashPattern count:_lineDashCount phase:_lineDashPhase];
     
     return result;
