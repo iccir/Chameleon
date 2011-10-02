@@ -67,6 +67,7 @@
     if (_path) {
         result->_path = CGPathCreateMutableCopy(_path);
     }
+    result->_immutablePath = NULL;
     
     result->_lineDashPattern = NULL;
     [result setLineDash:_lineDashPattern count:_lineDashCount phase:_lineDashPhase];
