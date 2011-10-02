@@ -60,6 +60,7 @@
 #import "UIImage+UIPrivate.h"
 #import "UIThreePartImage.h"
 #import "UINinePartImage.h"
+#import "UIColor.h"
 #import "UIGraphics.h"
 #import "UIPhotosAlbum.h"
 #import <AppKit/NSImage.h>
@@ -123,6 +124,12 @@
         CGImageRetain(_image);
     }
     return self;
+}
+
+- (id)initWithCGImage:(CGImageRef)imageRef scale:(CGFloat)scale orientation:(UIImageOrientation)orientation
+{
+    // Neither scale nor orientation are supported atm, so just call -initWithCGImage:
+    return [self initWithCGImage:imageRef];
 }
 
 - (id) initWithCoder:(NSCoder*)coder
@@ -215,6 +222,11 @@
     return [[[self alloc] initWithCGImage:imageRef] autorelease];
 }
 
++ (UIImage *)imageWithCGImage:(CGImageRef)imageRef scale:(CGFloat)scale orientation:(UIImageOrientation)orientation
+{
+    return [[[self alloc] initWithCGImage:imageRef scale:scale orientation:orientation] autorelease];
+}
+
 - (UIImage *)stretchableImageWithLeftCapWidth:(NSInteger)leftCapWidth topCapHeight:(NSInteger)topCapHeight
 {
     const CGSize size = self.size;
@@ -273,6 +285,18 @@
     CGContextScaleCTM(ctx, 1.0, -1.0);
     CGContextDrawImage(ctx, CGRectMake(0,0,rect.size.width,rect.size.height), _image);
     CGContextRestoreGState(ctx);
+}
+
+- (void)drawAsPatternInRect:(CGRect)rect
+{
+    UIColor *color = [[UIColor alloc] initWithPatternImage:self];
+
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(ctx, [color CGColor]);
+    CGContextFillRect(ctx, rect);
+    // Note: Official UIKit doesn't appear to do a CGContextSaveGState() / CGContextRestoreGState() in this method
+
+    [color release];
 }
 
 - (CGSize)size

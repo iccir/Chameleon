@@ -81,10 +81,12 @@ typedef enum {
 + (UIImage *)imageWithData:(NSData *)data;
 + (UIImage *)imageWithContentsOfFile:(NSString *)path;
 + (UIImage *)imageWithCGImage:(CGImageRef)imageRef;
++ (UIImage *)imageWithCGImage:(CGImageRef)imageRef scale:(CGFloat)scale orientation:(UIImageOrientation)orientation;
 
 - (id)initWithData:(NSData *)data;
 - (id)initWithContentsOfFile:(NSString *)path;
 - (id)initWithCGImage:(CGImageRef)imageRef;
+- (id)initWithCGImage:(CGImageRef)imageRef scale:(CGFloat)scale orientation:(UIImageOrientation)orientation;
 
 - (UIImage *)stretchableImageWithLeftCapWidth:(NSInteger)leftCapWidth topCapHeight:(NSInteger)topCapHeight;
 - (UIImage *)resizableImageWithCapInsets:(UIEdgeInsets)capInsets;
@@ -93,6 +95,7 @@ typedef enum {
 - (void)drawInRect:(CGRect)rect blendMode:(CGBlendMode)blendMode alpha:(CGFloat)alpha;
 - (void)drawAtPoint:(CGPoint)point;
 - (void)drawInRect:(CGRect)rect;
+- (void)drawAsPatternInRect:(CGRect)rect;
 
 @property (nonatomic, readonly) CGSize size;
 @property (nonatomic, readonly) NSInteger leftCapWidth;
