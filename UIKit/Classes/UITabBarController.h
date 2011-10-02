@@ -49,6 +49,7 @@
 @private
     UITabBar *_tabBar;
     UIViewController *_selectedViewController;
+    NSUInteger _selectedIndex;
     NSArray *_viewControllers;
     NSDictionary *_viewControllerByTabBarItem;
     id<UITabBarControllerDelegate> _delegate;

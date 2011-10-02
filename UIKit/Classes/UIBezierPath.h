@@ -38,7 +38,7 @@ enum {
 };
 typedef NSUInteger UIRectCorner;
 
-@interface UIBezierPath : NSObject {
+@interface UIBezierPath : NSObject <NSCopying> {
 @private
     CGPathRef _path;
     CGFloat _lineWidth;

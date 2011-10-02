@@ -57,6 +57,18 @@
     [super dealloc];
 }
 
+- (id)copyWithZone:(NSZone *)zone
+{
+    UIBezierPath *result = NSCopyObject(self, 0, zone);
+    if (_path) {
+        result->_path = CGPathCreateCopy(_path);
+    }
+    
+    [result setLineDash:_lineDashPattern count:_lineDashCount phase:_lineDashPhase];
+    
+    return result;
+}
+
 + (UIBezierPath *)bezierPathWithCGPath:(CGPathRef)CGPath
 {
     NSAssert(CGPath != NULL, @"CGPath must not be NULL");
