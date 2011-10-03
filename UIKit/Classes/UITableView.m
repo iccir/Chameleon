@@ -99,6 +99,7 @@ static NSString* const kUIStyleKey = @"UIStyle";
     _sections = [[NSMutableArray alloc] init];
     _reusableCells = [[NSMutableSet alloc] init];
     _selectedRows = [[NSMutableArray alloc] init];
+    _rowHeight = _UITableViewDefaultRowHeight;
     
     self.separatorColor = [UIColor colorWithRed:.88f green:.88f blue:.88f alpha:1];
     self.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
@@ -216,7 +217,7 @@ static NSString* const kUIStyleKey = @"UIStyle";
     
     if (_dataSource) {
         // compute the heights/offsets of everything
-        const CGFloat defaultRowHeight = _rowHeight ?: _UITableViewDefaultRowHeight;
+        const CGFloat defaultRowHeight = _rowHeight;
         const NSInteger numberOfSections = [self numberOfSections];
         for (NSInteger section=0; section<numberOfSections; section++) {
             const NSInteger numberOfRowsInSection = [self numberOfRowsInSection:section];
