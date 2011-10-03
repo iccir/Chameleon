@@ -973,12 +973,12 @@ static IMP defaultImplementationOfDisplayLayer;
                 break;
 
             case UIViewContentModeTop:
-                _layer.contentsGravity = kCAGravityTop;
+                _layer.contentsGravity = kCAGravityBottom;
                 _layer.needsDisplayOnBoundsChange = NO;
                 break;
 
             case UIViewContentModeBottom:
-                _layer.contentsGravity = kCAGravityBottom;
+                _layer.contentsGravity = kCAGravityTop;
                 _layer.needsDisplayOnBoundsChange = NO;
                 break;
 
@@ -993,22 +993,22 @@ static IMP defaultImplementationOfDisplayLayer;
                 break;
 
             case UIViewContentModeTopLeft:
-                _layer.contentsGravity = kCAGravityTopLeft;
-                _layer.needsDisplayOnBoundsChange = NO;
-                break;
-
-            case UIViewContentModeTopRight:
-                _layer.contentsGravity = kCAGravityTopRight;
-                _layer.needsDisplayOnBoundsChange = NO;
-                break;
-
-            case UIViewContentModeBottomLeft:
                 _layer.contentsGravity = kCAGravityBottomLeft;
                 _layer.needsDisplayOnBoundsChange = NO;
                 break;
 
-            case UIViewContentModeBottomRight:
+            case UIViewContentModeTopRight:
                 _layer.contentsGravity = kCAGravityBottomRight;
+                _layer.needsDisplayOnBoundsChange = NO;
+                break;
+
+            case UIViewContentModeBottomLeft:
+                _layer.contentsGravity = kCAGravityTopLeft;
+                _layer.needsDisplayOnBoundsChange = NO;
+                break;
+
+            case UIViewContentModeBottomRight:
+                _layer.contentsGravity = kCAGravityTopRight;
                 _layer.needsDisplayOnBoundsChange = NO;
                 break;
         }
